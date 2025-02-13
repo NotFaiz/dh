@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dhikr Counter</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .counter-container {
+            text-align: center;
+            background: #fff;
+            padding: 20px 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+        #count {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        button {
+            font-size: 1.2rem;
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #increment {
+            background-color: #2ecc71;
+            color: white;
+        }
+        #reset {
+            background-color: #e74c3c;
+            color: white;
+        }
+        #set-target {
+            background-color: #3498db;
+            color: white;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        .progress-bar {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-top: 20px;
+        }
+        .progress {
+            width: 0%;
+            height: 20px;
+            background-color: #2ecc71;
+            text-align: center;
+            line-height: 20px;
+            color: white;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="counter-container">
+        <h1>Dhikr Counter</h1>
+        <div id="count">0</div>
+        <button id="increment">+</button>
+        <button id="reset">Reset</button>
+        <button id="set-target">Set Target</button>
+        <div class="progress-bar">
+            <div class="progress" id="progress"></div>
+        </div>
+    </div>
+
+    <script>
+        let count = 0;
+        let target = localStorage.getItem('dhikrTarget') ? parseInt(localStorage.getItem('dhikrTarget')) : null;
+
+        const countElement = document.getElementById('count');
+        const progressElement = document.getElementById('progress');
+        const incrementButton = document.getElementById('increment');
+        const resetButton = document.getElementById('reset');
+        const setTargetButton = document.getElementById('set-target');
+
+        const savedCount = localStorage.getItem('dhikrCount');
+        if (savedCount) {
+            count = parseInt(savedCount);
+            countElement.textContent = count;
+        }
+
+        function updateProgressBar() {
+            if (target && target > 0) {
+                const progressPercentage = (count / target) * 100;
+                progressElement.style.width = `${Math.min(progressPercentage, 100)}%`;
+                progressElement.textContent = `${count}/${target}`;
+            } else {
+                progressElement.style.width = '0%';
+                progressElement.textContent = '';
+            }
+        }
+
+        incrementButton.addEventListener('click', () => {
+            count++;
+            countElement.textContent = count;
+            localStorage.setItem('dhikrCount', count);
+            updateProgressBar();
+        });
+
+        resetButton.addEventListener('click', () => {
+            count = 0;
+            countElement.textContent = count;
+            localStorage.removeItem('dhikrCount');
+            updateProgressBar();
+        });
+
+        setTargetButton.addEventListener('click', () => {
+            const targetInput = prompt('Enter your Dhikr target (e.g., 33, 100):');
+            const newTarget = parseInt(targetInput);
+            if (!isNaN(newTarget) && newTarget > 0) {
+                target = newTarget;
+                localStorage.setItem('dhikrTarget', target);
+                updateProgressBar();
+            } else {
+                alert('Please enter a valid positive number.');
+            }
+        });
+
+        updateProgressBar();
+    </script>
+
+</body>
+</html>
